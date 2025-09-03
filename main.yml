@@ -1,0 +1,106 @@
+openapi: 3.0.3
+info:
+  title: STD24210
+  version: 1.0.0
+  description: This is a specification of STD24210
+
+servers:
+  - url: http://localhost:8000
+
+paths:
+  /health:
+    get:
+      summary: Check API health
+      description: Returns "Ok" if the API is running.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Ok
+
+  /phones:
+    post:
+      summary: Create a new phone
+      description: Create a phone with its characteristics.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Phone'
+      responses:
+        '201':
+          description: Phone created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Phone'
+
+  /phones/{id}/characteristics:
+    put:
+      summary: Update phone characteristics
+      description: Update characteristics for a given phone using inheritance.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the phone
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PhoneCharacteristicsUpdate'
+      responses:
+        '200':
+          description: Characteristics updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Phone'
+
+components:
+  schemas:
+    Character:
+      type: object
+      properties:
+        color:
+          type: string
+          example: Black
+        storage:
+          type: string
+          example: 128GB
+        battery:
+          type: string
+          example: 4000mAh
+
+    PhoneBase:
+      type: object
+      properties:
+        identifier:
+          type: string
+          example: PHN001
+        brand:
+          type: string
+          example: Samsung
+        model:
+          type: string
+          example: Galaxy S24
+
+    Phone:
+      allOf:
+        - $ref: '#/components/schemas/PhoneBase'
+        - type: object
+          properties:
+            characteristics:
+              $ref: '#/components/schemas/Character'
+
+    PhoneCharacteristicsUpdate:
+      allOf:
+        - $ref: '#/components/schemas/Character'
+      description: Update only the characteristics of a phone
